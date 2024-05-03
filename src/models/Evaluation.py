@@ -1,8 +1,8 @@
-import mlflow
 import os
 
-
+import mlflow
 import pandas as pd
+
 
 def filter_params_indices(series):
     # Utiliser une expression régulière pour filtrer les indices commençant par "params."
@@ -24,7 +24,7 @@ def get_best_model(experiment_name):
     runs = mlflow.search_runs(experiment_ids=[experiment_id])
 
     # Trouver la meilleure exécution en fonction d'une métrique donnée (par exemple, RMSLE)
-    best_run = runs.loc[runs['metrics.Test RMSLE'].idxmin()]
+    best_run = runs.loc[runs["metrics.Test RMSLE"].idxmin()]
 
     # Afficher les métadonnées de la meilleure exécution
     print("Best run:")
@@ -36,10 +36,12 @@ def get_best_model(experiment_name):
 
     return best_params, model_artifact_uri
 
+
 def load_model(artifact_uri):
     # Charger le modèle à partir de l'emplacement de l'artefact
     model_path = os.path.join(artifact_uri, "model.pkl")
     return mlflow.sklearn.load_model(model_path)
+
 
 if __name__ == "__main__":
     # Nom de l'expérience MLflow

@@ -1,11 +1,27 @@
-import mlflow
+from typing import Any
+
 import pandas as pd
-filename=".csv"
-path_file="/home/onyxia/work/cine-insights/src/data/"
-def mlflow_fun(gmodel, experiment_name, num_appli, evaluation_data):
+import mlflow
+
+
+def mlflow_fun(
+    gmodel: Any, experiment_name: str, num_appli: int, evaluation_data: Any
+) -> None:
+    """
+    Function to perform model training, evaluation, and logging using MLflow.
+
+    Args:
+        gmodel (Any): The model object with train_model, evaluate_model, and predict_ methods.
+        experiment_name (str): The name of the MLflow experiment.
+        num_appli (int): The number of applications.
+        evaluation_data (Any): The evaluation data to make predictions on.
+
+    Returns:
+        None
+    """
     mlflow.set_experiment(experiment_name=experiment_name)
     grid_params = gmodel.param_Combination
-    
+
     for idx, params in enumerate(grid_params):
         run_name = f"run_{idx}"
         with mlflow.start_run(run_name=run_name):
@@ -14,9 +30,7 @@ def mlflow_fun(gmodel, experiment_name, num_appli, evaluation_data):
                 mlflow.log_param(param_name, param_value)
 
             # Train the model
-            
             gmodel.train_model(params=params)
-
 
             # Log fit metrics
             metrics = gmodel.evaluate_model()
@@ -37,6 +51,8 @@ def mlflow_fun(gmodel, experiment_name, num_appli, evaluation_data):
             predictions_df.to_csv(predictions_file_path, index=False)
             mlflow.log_artifact(predictions_file_path, artifact_path="predictions")
 
-            mlflow.log_table(data=predictions_df, artifact_file=run_name+"predictions_df.json")
+            mlflow.log_table(
+                data=predictions_df, artifact_file=run_name + "predictions_df.json"
+            )
             # Log training data URL
             mlflow.log_param("num_appli", num_appli)

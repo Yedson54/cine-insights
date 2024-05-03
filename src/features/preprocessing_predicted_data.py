@@ -1,6 +1,9 @@
 """Module to preprocess the data for the prediction tasks.
 """
 
+# pylint: disable=locally-disabled, multiple-statements, fixme, invalid-name, too-many-arguments, too-many-instance-attributes
+
+
 from datetime import datetime
 from typing import List, Tuple
 

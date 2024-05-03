@@ -31,7 +31,7 @@ WITH_DURATION: bool = False
 class XGBRegressorWrapper:
     """XGBRegressorWrapper."""
 
-    def __init__(self, Raw_data: pd.DataFrame, with_duration: bool):
+    def __init__(self, Raw_data: pd.DataFrame, with_duration: bool = WITH_DURATION):
         """
         Initialize the XGBRegressorWrapper.
 

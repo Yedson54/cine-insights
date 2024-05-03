@@ -4,31 +4,36 @@
 # pylint: disable=locally-disabled, fixme, invalid-name, too-many-arguments, too-many-instance-attributes
 
 import pandas as pd
-import IPython.display as display
+from pyarrow.parquet import ParquetFile
+from IPython import display
 
+def load_data(in_path, name, n_display=1, show_info=False, sep=",", nrows=720000):
+    """
+    Load data from either a CSV or Parquet file based on the file extension.
 
-def load_data(in_path, name, n_display=1, show_info=False, nrows=None):
-    df = pd.read_parquet(in_path, nrows=nrows)
-    print(f"{name}: shape is {df.shape}")
-    df = df.rename(columns={"keywords": "Keywords"})
+    Args:
+        in_path (str): The path to the input file.
+        name (str): The name of the dataset.
+        n_display (int, optional): The number of rows to display. Defaults to 1.
+        show_info (bool, optional): Whether to display information about the DataFrame. Defaults to False.
+        sep (str, optional): The delimiter used in the CSV file. Defaults to ",".
+        nrows (int, optional): The number of rows to read from the CSV file. Defaults to 720000.
 
-    if show_info:
-        print(df.info())
+    Returns:
+        pd.DataFrame: The loaded DataFrame.
+    """
+    file_extension = in_path.split('.')[-1]
 
-    if n_display > 0:
-        display.display(df.head(n_display))
+    if file_extension == 'csv':
+        df = load_data_csv(in_path, name, n_display, show_info, sep, nrows)
+    elif file_extension == 'parquet':
+        df = load_data_parquet(in_path, name, n_display, show_info)
+    else:
+        raise ValueError("Unsupported file format. Only CSV and Parquet are supported.")
 
     return df
 
-
-def load_data_csv(
-    in_path: str,
-    name: str,
-    n_display: int = 1,
-    show_info: bool = False,
-    sep: str = ",",
-    nrows: int = 720000,
-) -> pd.DataFrame:
+def load_data_csv(in_path, name, n_display=1, show_info=False, sep=",", nrows=720000):
     """
     Load data from a CSV file.
 
@@ -51,6 +56,32 @@ def load_data_csv(
         print(df.info())
 
     if n_display > 0:
-        df.head(n_display)
+        display.display(df.head(n_display))
+
+    return df
+
+def load_data_parquet(in_path, name, n_display=1, show_info=False):
+    """
+    Load data from a Parquet file.
+
+    Args:
+        in_path (str): The path to the input Parquet file.
+        name (str): The name of the dataset.
+        n_display (int, optional): The number of rows to display. Defaults to 1.
+        show_info (bool, optional): Whether to display information about the DataFrame. Defaults to False.
+
+    Returns:
+        pd.DataFrame: The loaded DataFrame.
+    """
+    pf = ParquetFile(in_path)
+    df = pf.read().to_pandas()
+    print(f"{name}: shape is {df.shape}")
+    df = df.rename(columns={"keywords": "Keywords"})
+
+    if show_info:
+        print(df.info())
+
+    if n_display > 0:
+        display.display(df.head(n_display))
 
     return df

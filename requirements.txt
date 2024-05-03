@@ -2,12 +2,14 @@
 # -e .
 
 # main dependencies
-matplotlib
-numpy
-pandas
+matplotlib==3.8.4
+mlflow==2.12.1
+numpy==1.26.4
+pandas==2.2.2
 PyYAML
 seaborn
 scikit-learn
+xgboost==2.0.3
 
 # external requirements
 coverage
